@@ -1,6 +1,8 @@
 package com.springAop.springaop.aspect;
 
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.slf4j.Logger;
@@ -13,25 +15,21 @@ import org.springframework.context.annotation.Configuration;
  */
 @Aspect //combination of joinPoint and Advice
 @Configuration
-public class BeforeAspect {
+public class MethodExeCalculatingAspect {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    //What kind of method calls i would intercept
-    // execution (* package/class/method()
 
-    /**
-     * @param joinPoint is specific interceptor
-     *
-     * Weaving & Weaver
-     */
-    //all in comma is POINTCUT
-    @Before("com.springAop.springaop.aspect.CommonJoinPointConfig.dataLayerExe()") // in package Business for *any class *any methods with (..) any arguments
-    public void before(JoinPoint joinPoint){
-        //this is ADVICE
-        logger.info("intercepted Method Calls {}", joinPoint);
-        //like example = some checks as by valid or access
+    @Around("com.springAop.springaop.aspect.CommonJoinPointConfig.trackTimeAnnotation()") // in package Business for *any class *any methods with (..) any arguments
+    public void around(ProceedingJoinPoint joinPoint) throws Throwable {
 
+        long startTime = System.currentTimeMillis();
+        joinPoint.proceed();
+        long timeTaken = System.currentTimeMillis() - startTime;
+        logger.info("Time taken by {} is {}", joinPoint, timeTaken);
+        //startTime = x
+        //allow execution of method
+        //end Time = y
     }
 }
 /**

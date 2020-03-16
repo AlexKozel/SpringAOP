@@ -1,8 +1,7 @@
 package com.springAop.springaop.aspect;
 
 import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
@@ -13,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Aspect //combination of joinPoint and Advice
 @Configuration
-public class BeforeAspect {
+public class AfterAopAspect {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -26,14 +25,38 @@ public class BeforeAspect {
      * Weaving & Weaver
      */
     //all in comma is POINTCUT
-    @Before("com.springAop.springaop.aspect.CommonJoinPointConfig.dataLayerExe()") // in package Business for *any class *any methods with (..) any arguments
-    public void before(JoinPoint joinPoint){
+    @AfterReturning(value="execution(* com.springAop.springaop.business.*.*(..))",
+    returning ="result"
+    ) // in package Business for *any class *any methods with (..) any arguments
+    public void afterReturning(JoinPoint joinPoint, Object result){
         //this is ADVICE
-        logger.info("intercepted Method Calls {}", joinPoint);
+        logger.info("After method {}returned with value {}", joinPoint, result);
         //like example = some checks as by valid or access
 
     }
+
+    /**
+     * Work after Throw exception
+     * @param joinPoint
+     * @param exception
+     */
+    @AfterThrowing(value="execution(* com.springAop.springaop.business.*.*(..))",
+            throwing ="exception"
+    )    public void afterThrowing(JoinPoint joinPoint, Exception exception){
+        logger.info("{}returned with value {}", joinPoint, exception);
+    }
+
+    /**
+     * work after method is called
+     * @param joinPoint
+     */
+    @After(value="execution(* com.springAop.springaop.business.*.*(..))")
+    public void after(JoinPoint joinPoint){
+        logger.info("{}returned with value {}", joinPoint);
+    }
 }
+
+
 /**
  Before — перед вызовом метода
  After — после вызова метода
